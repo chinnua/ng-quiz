@@ -1,0 +1,22 @@
+<ng-container *ngIf="question">
+  <div class="e-alert dark text-left shadow-2 border">
+    <h1 class="e-title size-6" [innerHTML]="question.question"></h1>
+  </div>
+  <div class="e-alert mt-3 text-left answer-container" [class.warning]="chosenAnswer == a"
+    [class.white]="chosenAnswer != a" *ngFor="let a of question.all_answers; let ai = index" (click)="selectAnswer(a)">
+    <div class="clean">
+      <div class="alpha">
+        <span class="e-tag shadow-6 primary">{{ alphabets[ai] }}</span>
+      </div>
+      <div class="answer" [innerHTML]="a"></div>
+    </div>
+  </div>
+  <div class="clean mt-3 centered">
+    <a class="e-btn danger" (click)="validateAnswer()">Check & Next</a>
+  </div>
+</ng-container>
+
+<div class="e-box white topcorner" style="width: 20rem;">
+  <div>Correct Answers: {{ correctAnswerCount }}</div>
+  <div>Wrong Answers: {{ wrongAnswerCount }}</div>
+</div>
