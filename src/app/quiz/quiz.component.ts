@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { QuestionsService } from '../questions.service';
 import { Question } from '../models/question.model';
 import Swal from 'sweetalert2';
+import { interval } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-quiz',
@@ -13,9 +15,10 @@ export class QuizComponent implements OnInit {
   question: Question;
   alphabets: any = ['A', 'B', 'C', 'D'];
   chosenAnswer: any;
-  correctAnswerCount: number = 0;
-  wrongAnswerCount: number = 0;
-  showAlert: boolean = false;
+  correctAnswerCount = 0;
+  wrongAnswerCount = 0;
+  showAlert = false;
+  timer = 10;
 
   customSwal = Swal.mixin({
     customClass: {
@@ -30,11 +33,24 @@ export class QuizComponent implements OnInit {
     this.getQuestion();
   }
 
+  startCountDown(seconds) {
+    this.timer = seconds;
+    let interval = setInterval(() => {
+      this.timer--;
+      if (this.timer === 0) {
+        // code here will run when the counter reaches zero.
+        clearInterval(interval);
+      }
+    }, 1000);
+  }
+
+
   getQuestion() {
     this.chosenAnswer = null;
     this.questionService.getQuestions().subscribe(res => {
       this.question = res['results'][0] as Question;
       this.question.all_answers = this.question.incorrect_answers.concat(this.question.correct_answer).sort();
+      this.startCountDown(10);
     });
   }
 
