@@ -4,6 +4,7 @@ import { Question } from '../models/question.model';
 import Swal from 'sweetalert2';
 import { interval } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { SharedService } from '../shared.service';
 
 @Component({
   selector: 'app-quiz',
@@ -19,6 +20,7 @@ export class QuizComponent implements OnInit {
   wrongAnswerCount = 0;
   showAlert = false;
   timer = 10;
+  selectedCategory: any;
 
   customSwal = Swal.mixin({
     customClass: {
@@ -27,10 +29,11 @@ export class QuizComponent implements OnInit {
     buttonsStyling: false,
   });
 
-  constructor(private questionService: QuestionsService) { }
+  constructor(private questionService: QuestionsService, private sharedService: SharedService) { }
 
   ngOnInit() {
-    this.getQuestion();
+    this.selectedCategory = this.sharedService.getSelectedCategory();
+    this.getQuestion(this.selectedCategory);
   }
 
   startCountDown(seconds) {
@@ -45,9 +48,9 @@ export class QuizComponent implements OnInit {
   }
 
 
-  getQuestion() {
+  getQuestion(selectedCategory: any) {
     this.chosenAnswer = null;
-    this.questionService.getQuestions().subscribe(res => {
+    this.questionService.getQuestions(selectedCategory).subscribe(res => {
       this.question = res['results'][0] as Question;
       this.question.all_answers = this.question.incorrect_answers.concat(this.question.correct_answer).sort();
       this.startCountDown(10);
@@ -74,7 +77,7 @@ export class QuizComponent implements OnInit {
         type: 'error'
       });
     }
-    this.getQuestion();
+    this.getQuestion(this.selectedCategory);
   }
 
 }
